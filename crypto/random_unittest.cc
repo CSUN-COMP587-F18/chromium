@@ -24,8 +24,25 @@ bool IsTrivial(const std::string& bytes) {
   return true;
 }
 
+bool IsEqual(const std::string& bytes1, const std::string& bytes2) {
+  if(bytes1.size() != bytes2.size())
+  {
+    //Log size mismatch error here, this should not happen.
+    return false;
+  }
+  for (size_t i = 0; i < bytes1.size(); i++) {
+    if (bytes1[i] != bytes2[0]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 TEST(RandBytes, RandBytes) {
-  std::string bytes(16, '\0');
-  crypto::RandBytes(base::WriteInto(&bytes, bytes.size()), bytes.size());
-  EXPECT_TRUE(!IsTrivial(bytes));
+  std::string bytes1(16, '\0');
+  std::string bytes2(16, '\0');
+  crypto::RandBytes(base::WriteInto(&bytes1, bytes1.size()), bytes1.size());
+  crypto::RandBytes(base::WriteInto(&bytes2, bytes2.size()), bytes2.size());
+  EXPECT_TRUE(!IsTrivial(bytes1));
+  EXPECT_TRUE(!IsEqual(bytes1, bytes2));
 }
