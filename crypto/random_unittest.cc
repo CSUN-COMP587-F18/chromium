@@ -24,6 +24,47 @@ bool IsTrivial(const std::string& bytes) {
   return true;
 }
 
+const int samples = 1000;
+const int bytesSize = 16;
+const float threshold = 0.1f;
+
+bool IsEvenlyDistributed() {
+  int* zeroes[bytesSize] = {0};
+  int* ones[bytesSize] = {0};
+  std::string bytes(bytesSize, '\0');
+  for (size_t i = 0; i < samples; i++) {
+    crypto::RandBytes(base::WriteInto(&bytes, bytesSize), bytesSize);
+    for (size_t j = 0; j < bytesSize; j++) {
+      if(bytes[j] == 0)
+      {
+        zeroes[j] = zeroes[j] + 1;
+      }
+      else if(bytes[j] == 1)
+      {
+        ones[j] = ones[j] + 1;
+      }
+      else
+      {
+        // Something is really broken if this happens.
+        return false;
+      }
+    }
+  }
+  for (size_t i = 0; i < bytesSize; i++) {
+    if(zeroes[i] + ones[i] != samples)
+    {
+      // Something is wrong if this happens.
+      return false;
+    }
+    float ratio = (float) zeroes[i] / (float) samples;
+    if(ratio - treshold > 0.5 || ratio + threshold < 0.5)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 TEST(RandBytes, RandBytes) {
   std::string bytes(16, '\0');
   crypto::RandBytes(base::WriteInto(&bytes, bytes.size()), bytes.size());
